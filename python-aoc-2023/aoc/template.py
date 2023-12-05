@@ -3,7 +3,7 @@ from typing import Any
 from aoc.models import InputLines
 from aoc.run import solve
 
-DAY = 4
+DAY = 0
 
 
 def first_star(input_lines: InputLines) -> Any:
