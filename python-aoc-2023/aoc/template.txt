@@ -7,11 +7,11 @@ DAY = 0
 
 
 def first_star(input_lines: InputLines) -> Any:
-    raise NotImplementedError()
+    return 0
 
 
 def second_star(input_lines: InputLines) -> Any:
-    raise NotImplementedError()
+    return 0
 
 
 if __name__ == "__main__":
