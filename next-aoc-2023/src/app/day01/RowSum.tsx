@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react"
 
-interface Props { calibrationValues: number[], nextStateSetter: {(value: number): void} }
+interface Props { lineStates: {formedNumber: number | null}[], nextStateSetter: {(value: number): void} }
 
-export default function RowSum({ calibrationValues, nextStateSetter }: Props) {
-    const [remainingRows, setRemainingRows] = useState<(number | null)[]>(calibrationValues)
+export default function RowSum({ lineStates, nextStateSetter }: Props) {
+    const formedNumbers = lineStates.map(({formedNumber}) => formedNumber)
+
+    const [remainingRows, setRemainingRows] = useState<(number | null)[]>(formedNumbers)
     const [total, setTotal] = useState<number>()
 
-    const duration = calibrationValues.length * 5
+    const duration = formedNumbers.length * 5
     useEffect(() => {
         const index = remainingRows.findIndex(x => x !== null)
         if (index !== -1) {

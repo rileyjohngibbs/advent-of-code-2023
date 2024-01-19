@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-import BareInput from "./BareInput"
+import { SolutionState, LineState } from "./types"
 import LeftScan from "./LeftScan"
 import RightScan from "./RightScan"
 import ConcatenateDigits from "./ConcatenateDigits"
@@ -10,35 +10,40 @@ import RowSum from "./RowSum"
 
 /*
 1. Scan each line from left until first digit is found.
-    1. (line: string, index: number, leftDigit: number?, incompleteSetter: {(): null}) => {line, index, leftDigit}
 2. Scan each line from right until first digit is found.
 3. Concatenate the digits and interpret as a number.
 4. Add the numbers together.
+
+1. Scan each line from left until first number name or digit is found.
 */
 
 interface Props { inputLines: string[] }
 
+
 export default function SolutionStepper({ inputLines }: Props) {
-    const [bareInput, setBareInput] = useState<string[]>()
-    const [leftScan, setLeftScan] = useState<{line: string, leftDigit: number}[]>()
-    const [rightScan, setRightScan] = useState<{line: string, leftDigit: number, rightDigit: number}[]>()
-    const [concenateDigits, setConcatenateDigits] = useState<number[]>()
-    const [rowSum, setRowSum] = useState<number>()
+    const [problemPart, setProblemPart] = useState<1|2>(1)
+    const [solutionState, setSolutionState] = useState<SolutionState>(
+        new SolutionState(inputLines.map(line => new LineState(line)))
+    )
     
-    if (rowSum !== undefined) {
-        [setBareInput, setLeftScan, setRightScan, setConcatenateDigits, setRowSum].forEach(
-            (setter) => setter(undefined)
-        )
-    } 
-    if (concenateDigits !== undefined) {
-        return <RowSum calibrationValues={concenateDigits} nextStateSetter={setRowSum} />
-    } else if (rightScan !== undefined) {
-        return <ConcatenateDigits fullyScannedLines={rightScan} nextStateSetter={setConcatenateDigits} />
-    } else if (leftScan !== undefined) {
-        return <RightScan leftScannedLines={leftScan} nextStateSetter={setRightScan} />
-    } else if (bareInput !== undefined) {
-        return <LeftScan lines={bareInput} nextStateSetter={setLeftScan} />
+    if (solutionState.solution !== null) {
+        setProblemPart(problemPart === 1 ? 2 : 1)
+        setSolutionState(new SolutionState(inputLines.map(line => new LineState(line))))
+    } else if (solutionState.lineStates[0].formedNumber !== null) {
+        const nextStateSetter = (solution: number) => {
+            setSolutionState(new SolutionState(solutionState.lineStates, solution))
+        }
+        return <RowSum lineStates={solutionState.lineStates} nextStateSetter={nextStateSetter} />
+    } else if (solutionState.lineStates[0].rightDigit !== null) {
+        const nextStateSetter = (formedNumbers: number[]) => {
+            setSolutionState(new SolutionState(solutionState.lineStates.map(
+                ({line, leftDigit, rightDigit}, i) => new LineState(line, leftDigit, rightDigit, formedNumbers[i])
+            )))
+        }
+        return <ConcatenateDigits lineStates={solutionState.lineStates} nextStateSetter={nextStateSetter} />
+    } else if (solutionState.lineStates[0].leftDigit !== null) {
+        return <LeftScan solutionState={solutionState} problemPart={problemPart} setSolutionState={setSolutionState} />
     } else {
-        return <BareInput lines={inputLines} nextStateSetter={setBareInput} />
+        return <LeftScan solutionState={solutionState} problemPart={problemPart} setSolutionState={setSolutionState} />
     }
 }
