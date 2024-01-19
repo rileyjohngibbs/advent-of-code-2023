@@ -9,9 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        '7-pipe': "url('/images/7-pipe.svg')",
+        'L-pipe': "url('/images/L-pipe.svg')",
+        'F-pipe': "url('/images/F-pipe.svg')",
+        'J-pipe': "url('/images/J-pipe.svg')",
+        'h-pipe': "url('/images/h-pipe.svg')",
+        'v-pipe': "url('/images/v-pipe.svg')",
       },
     },
   },
